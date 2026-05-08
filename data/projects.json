@@ -1,18 +1,5 @@
 [
   {
-    "id": "j-link",
-    "name": "J.Link Portfolio",
-    "slug": "j-link",
-    "description": "Personal portfolio and digital workshop — built from scratch with plain HTML, CSS, and vanilla JS. Engineering-draftsman aesthetic, dark/light theme, zero framework.",
-    "url": "https://j-link.vercel.app",
-    "repo": "https://github.com/juben332/j-link",
-    "framework": "HTML/CSS/JS",
-    "stack": ["HTML5", "CSS Custom Properties", "Vanilla JS", "Vercel"],
-    "featured": true,
-    "hidden": false,
-    "updatedAt": "2026-05-08T14:32:16Z"
-  },
-  {
     "id": "habibi-skincare",
     "name": "Habibi Skincare",
     "slug": "habibi-skincare",
