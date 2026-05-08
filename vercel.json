@@ -1,7 +1,3 @@
 {
-  "cleanUrls": true,
-  "rewrites": [
-    { "source": "/",      "destination": "/ui_kits/website/index.html" },
-    { "source": "/(.*)", "destination": "/ui_kits/website/$1" }
-  ]
+  "cleanUrls": true
 }
