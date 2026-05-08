@@ -1,0 +1,906 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>J●Link — Built well, documented better.</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    /* ─── Reset ─────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    a { color: inherit; text-decoration: none; }
+    button { font: inherit; cursor: pointer; }
+    hr { border: none; }
+
+    /* ─── Tokens ─────────────────────────────────────── */
+    :root {
+      --ink:        #1A1816;
+      --cream:      #EFE6D2;
+      --copper:     #B85C20;
+      --copper-dim: rgba(184, 92, 32, 0.30);
+      --font-sans:  'Inter', sans-serif;
+      --font-mono:  'JetBrains Mono', monospace;
+    }
+
+    [data-theme="dark"] {
+      --bg:         #1A1816;
+      --fg:         #EFE6D2;
+      --fg-muted:   rgba(239, 230, 210, 0.48);
+      --fg-dim:     rgba(239, 230, 210, 0.24);
+      --border:     rgba(239, 230, 210, 0.35);
+      --border-mid: rgba(239, 230, 210, 0.55);
+      --card-hover: rgba(239, 230, 210, 0.028);
+      --dot-grid:   rgba(239, 230, 210, 0.032);
+    }
+
+    [data-theme="light"] {
+      --bg:         #EFE6D2;
+      --fg:         #1A1816;
+      --fg-muted:   rgba(26, 24, 22, 0.52);
+      --fg-dim:     rgba(26, 24, 22, 0.30);
+      --border:     rgba(26, 24, 22, 0.35);
+      --border-mid: rgba(26, 24, 22, 0.55);
+      --card-hover: rgba(26, 24, 22, 0.028);
+      --dot-grid:   rgba(26, 24, 22, 0.05);
+    }
+
+    /* ─── Base ───────────────────────────────────────── */
+    html { font-size: 16px; scroll-behavior: smooth; }
+
+    body {
+      background-color: var(--bg);
+      background-image: radial-gradient(circle, var(--dot-grid) 1px, transparent 1px);
+      background-size: 28px 28px;
+      color: var(--fg);
+      font-family: var(--font-sans);
+      font-weight: 400;
+      line-height: 1.55;
+      min-height: 100vh;
+      transition: background-color 0.35s ease, color 0.35s ease;
+    }
+
+    /* ─── Layout ─────────────────────────────────────── */
+    .container {
+      max-width: 1160px;
+      margin: 0 auto;
+      padding: 0 64px;
+    }
+
+    /* ─── Logo ───────────────────────────────────────── */
+    .logo {
+      display: inline-flex;
+      align-items: center;
+      font-family: var(--font-mono);
+      font-weight: 500;
+      font-size: 17px;
+      letter-spacing: -0.01em;
+      color: var(--fg);
+      line-height: 1;
+    }
+
+    .logo-dot {
+      display: inline-block;
+      width: 7px;
+      height: 7px;
+      background: var(--copper);
+      border-radius: 50%;
+      margin: 0 1.5px;
+      position: relative;
+      top: -0.5px;
+      flex-shrink: 0;
+      transition: box-shadow 0.30s ease, transform 0.30s ease;
+    }
+
+    .logo:hover .logo-dot {
+      box-shadow: 0 0 0 2px var(--copper-dim), 0 0 12px rgba(184,92,32,0.5);
+      transform: scale(1.2);
+    }
+
+    /* ─── Title-block strip ──────────────────────────── */
+    .title-strip {
+      display: flex;
+      align-items: stretch;
+      border-bottom: 1px solid var(--border-mid);
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .title-strip::-webkit-scrollbar { display: none; }
+
+    .ts-cell {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 18px;
+      border-right: 1px solid var(--border-mid);
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .ts-cell:last-child { border-right: none; margin-left: auto; }
+
+    .ts-lbl {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--fg-dim);
+    }
+
+    .ts-val {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.04em;
+      color: var(--fg-muted);
+    }
+
+    .ts-val.cu { color: var(--copper); }
+
+    /* ─── Header / Nav ───────────────────────────────── */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background-color: var(--bg);
+      border-bottom: 1px solid var(--border);
+      transition: background-color 0.35s ease;
+    }
+
+    .nav-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 0;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 28px;
+    }
+
+    .nav-links a {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.06em;
+      color: var(--fg-muted);
+      position: relative;
+      transition: color 0.20s ease;
+    }
+
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: -2px;
+      left: 0;
+      width: 0;
+      height: 0.5px;
+      background: var(--copper);
+      transition: width 0.22s ease;
+    }
+
+    .nav-links a:hover { color: var(--fg); }
+    .nav-links a:hover::after { width: 100%; }
+
+    .theme-btn {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      color: var(--fg-muted);
+      background: none;
+      border: 1px solid var(--border-mid);
+      padding: 5px 11px;
+      transition: color 0.2s ease, border-color 0.2s ease;
+    }
+
+    .theme-btn:hover {
+      color: var(--fg);
+      border-color: var(--copper-dim);
+    }
+
+    /* ─── Hero ───────────────────────────────────────── */
+    .hero {
+      padding: 88px 0 80px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .hero-eyebrow {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 36px;
+    }
+
+    .copper-node {
+      width: 9px;
+      height: 9px;
+      background: var(--copper);
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .hero-hl {
+      font-family: var(--font-sans);
+      font-weight: 500;
+      font-size: clamp(38px, 5.5vw, 56px);
+      line-height: 1.05;
+      letter-spacing: -0.025em;
+      margin-bottom: 22px;
+    }
+
+    .hero-sub {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      letter-spacing: 0.03em;
+      color: var(--fg-muted);
+      line-height: 1.65;
+      max-width: 560px;
+    }
+
+    .hero-stats {
+      display: flex;
+      align-items: stretch;
+      margin-top: 52px;
+      border: 1px solid var(--border-mid);
+      width: fit-content;
+    }
+
+    .stat-cell {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      padding: 14px 28px;
+      border-right: 1px solid var(--border-mid);
+    }
+    .stat-cell:last-child { border-right: none; }
+
+    .stat-val {
+      font-family: var(--font-mono);
+      font-weight: 500;
+      font-size: 20px;
+      letter-spacing: -0.02em;
+      color: var(--fg);
+      line-height: 1;
+    }
+
+    .stat-val.cu { color: var(--copper); }
+
+    .stat-lbl {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      letter-spacing: 0.10em;
+      text-transform: uppercase;
+      color: var(--fg-dim);
+    }
+
+    /* ─── Section header ─────────────────────────────── */
+    .sec-hd {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 52px 0 30px;
+    }
+
+    .sec-lbl {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.10em;
+      text-transform: uppercase;
+      color: var(--fg-muted);
+      white-space: nowrap;
+    }
+
+    .sec-rule {
+      flex: 1;
+      height: 0;
+      border-top: 2px dashed var(--border-mid);
+    }
+
+    /* ─── Projects ───────────────────────────────────── */
+    .projects { border-bottom: 1px solid var(--border); }
+
+    .project-entry {
+      border-top: 1px solid var(--border);
+      border-left: 1.5px solid transparent;
+      margin-left: -1.5px;
+      padding: 36px 0 36px 16px;
+      transition: border-left-color 0.22s ease, background 0.20s ease;
+    }
+
+    .project-entry:hover {
+      border-left-color: var(--copper);
+      background: var(--card-hover);
+    }
+
+    .proj-ref-row {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+
+    .proj-ref {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      color: var(--fg-dim);
+      transition: color 0.20s ease;
+    }
+
+    .project-entry:hover .proj-ref { color: var(--copper); }
+
+    .proj-status-top {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.06em;
+      color: var(--fg-dim);
+    }
+
+    .proj-title {
+      font-family: var(--font-sans);
+      font-weight: 500;
+      font-size: 18px;
+      line-height: 1.2;
+      letter-spacing: -0.01em;
+      color: var(--fg);
+      margin-bottom: 10px;
+    }
+
+    .proj-desc {
+      font-size: 14px;
+      line-height: 1.70;
+      color: var(--fg-muted);
+      max-width: 680px;
+      margin-bottom: 24px;
+    }
+
+    /* ── 4-col meta grid (border from screenshot) ── */
+    .proj-meta {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      border-top: 1px solid var(--border);
+      padding-top: 16px;
+    }
+
+    .meta-col {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      padding-right: 20px;
+    }
+
+    .meta-col + .meta-col {
+      border-left: 1px solid var(--border);
+      padding-left: 20px;
+      padding-right: 20px;
+    }
+
+    .meta-col:last-child { padding-right: 0; }
+
+    .m-lbl {
+      font-family: var(--font-mono);
+      font-size: 8px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--fg-dim);
+    }
+
+    .m-val {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.02em;
+      color: var(--fg-muted);
+    }
+
+    .m-badge {
+      display: inline-flex;
+      align-items: center;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.04em;
+      color: var(--copper);
+      border: 1px solid var(--copper-dim);
+      padding: 2px 9px;
+      width: fit-content;
+    }
+
+    .m-badge::before { content: '• '; }
+
+    /* ─── About ──────────────────────────────────────── */
+    .about { border-bottom: 1px solid var(--border); padding-bottom: 72px; }
+
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 260px;
+      gap: 72px;
+      align-items: start;
+    }
+
+    .about-prose { display: flex; flex-direction: column; gap: 18px; }
+
+    .about-prose p {
+      font-size: 15px;
+      line-height: 1.72;
+      color: var(--fg-muted);
+    }
+
+    .about-prose strong { color: var(--fg); font-weight: 500; }
+
+    .about-sig {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      letter-spacing: 0.03em;
+      color: var(--fg-dim);
+      border-top: 1px solid var(--border);
+      padding-top: 16px;
+    }
+
+    .about-side { display: flex; flex-direction: column; gap: 24px; }
+
+    .sb-blk { display: flex; flex-direction: column; gap: 10px; }
+
+    .sb-lbl {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--fg-dim);
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 7px;
+    }
+
+    .tags { display: flex; flex-wrap: wrap; gap: 6px; }
+
+    .tag {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.03em;
+      color: var(--fg-muted);
+      border: 1px solid var(--border-mid);
+      padding: 3px 9px;
+      transition: border-color 0.20s ease, color 0.20s ease;
+    }
+
+    .tag:hover { color: var(--fg); border-color: var(--copper-dim); }
+
+    /* ─── Contact ────────────────────────────────────── */
+    .contact { border-bottom: 1px solid var(--border); padding-bottom: 72px; }
+
+    .contact-list { display: flex; flex-direction: column; }
+
+    .contact-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 22px 0;
+      border-bottom: 1px solid var(--border);
+      transition: background 0.18s ease;
+    }
+
+    .contact-row:first-child { border-top: 1px solid var(--border); }
+    .contact-row:hover .cr-name { color: var(--copper); }
+    .contact-row:hover .cr-arrow { color: var(--copper); transform: translateX(5px); }
+
+    .cr-left { display: flex; flex-direction: column; gap: 3px; }
+
+    .cr-platform {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--fg-dim);
+    }
+
+    .cr-name {
+      font-family: var(--font-sans);
+      font-weight: 500;
+      font-size: 17px;
+      letter-spacing: -0.01em;
+      color: var(--fg);
+      transition: color 0.20s ease;
+    }
+
+    .cr-arrow {
+      font-family: var(--font-mono);
+      font-size: 16px;
+      color: var(--fg-dim);
+      display: inline-block;
+      transition: color 0.20s ease, transform 0.22s ease;
+    }
+
+    /* ─── Footer ─────────────────────────────────────── */
+    footer { border-top: 1px solid var(--border-mid); }
+
+    .footer-strip {
+      display: flex;
+      align-items: stretch;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .footer-strip::-webkit-scrollbar { display: none; }
+
+    .fs-cell {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 18px;
+      border-right: 1px solid var(--border-mid);
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .fs-cell:last-child { border-right: none; margin-left: auto; }
+
+    .fs-lbl {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--fg-dim);
+    }
+
+    .fs-val {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.03em;
+      color: var(--fg-muted);
+    }
+
+    .fs-val.cu { color: var(--copper); }
+
+    /* ─── Animations ─────────────────────────────────── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(14px); }
+      to   { opacity: 1; transform: translateY(0);     }
+    }
+
+    .fu { opacity: 0; animation: fadeUp 0.55s cubic-bezier(0.22,1,0.36,1) forwards; }
+    .d1 { animation-delay: 0.05s; }
+    .d2 { animation-delay: 0.15s; }
+    .d3 { animation-delay: 0.25s; }
+    .d4 { animation-delay: 0.38s; }
+
+    /* ─── Responsive ─────────────────────────────────── */
+    @media (max-width: 900px) {
+      .about-grid { grid-template-columns: 1fr; gap: 40px; }
+      .proj-meta { grid-template-columns: repeat(2, 1fr); gap: 16px 0; }
+      .meta-col + .meta-col:nth-child(odd) { border-left: none; padding-left: 0; }
+    }
+
+    @media (max-width: 680px) {
+      .container { padding: 0 24px; }
+      .proj-meta { grid-template-columns: 1fr; gap: 14px 0; }
+      .meta-col + .meta-col { border-left: none; padding-left: 0; }
+      .hero-stats { flex-wrap: wrap; }
+      .stat-cell { border-right: none; border-bottom: 1px solid var(--border-mid); }
+      .stat-cell:last-child { border-bottom: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ══ Header ════════════════════════════════════ -->
+  <header>
+    <!-- Engineering title-block strip -->
+    <div class="title-strip">
+      <div class="ts-cell">
+        <span class="ts-lbl">Project</span>
+        <span class="ts-val">J.Link Portfolio</span>
+      </div>
+      <div class="ts-cell">
+        <span class="ts-lbl">Direction</span>
+        <span class="ts-val">Workshop</span>
+      </div>
+      <div class="ts-cell">
+        <span class="ts-lbl">Rev</span>
+        <span class="ts-val cu">0.1</span>
+      </div>
+      <div class="ts-cell">
+        <span class="ts-lbl">Date</span>
+        <span class="ts-val">2026.05</span>
+      </div>
+      <div class="ts-cell">
+        <span class="ts-lbl">Sheet</span>
+        <span class="ts-val">01 of 01</span>
+      </div>
+      <div class="ts-cell">
+        <span class="ts-lbl">Status</span>
+        <span class="ts-val cu">Live</span>
+      </div>
+    </div>
+
+    <!-- Nav -->
+    <div class="container">
+      <div class="nav-row">
+        <a href="#" class="logo" aria-label="J.Link — home">
+          J<span class="logo-dot"></span>Link
+        </a>
+        <nav class="nav-links">
+          <a href="#projects">Projects</a>
+          <a href="#about">About</a>
+          <a href="#contact">Contact</a>
+          <button class="theme-btn" id="themeBtn" onclick="toggleTheme()">◐ Light</button>
+        </nav>
+      </div>
+    </div>
+  </header>
+
+
+  <!-- ══ Hero ══════════════════════════════════════ -->
+  <section class="hero">
+    <div class="container">
+
+      <div class="hero-eyebrow fu d1">
+        <div class="copper-node"></div>
+        <span style="font-family:var(--font-mono);font-size:12px;letter-spacing:0.05em;color:var(--fg-muted);">
+          Build log — multidisciplinary builder, Philippines
+        </span>
+      </div>
+
+      <h1 class="hero-hl fu d2">Built well,<br>documented better.</h1>
+
+      <p class="hero-sub fu d3">
+        Websites, apps, and hardware — each numbered, specced out, and shipped
+        with a record of what broke and what got fixed.
+      </p>
+
+      <div class="hero-stats fu d4">
+        <div class="stat-cell">
+          <span class="stat-val">014</span>
+          <span class="stat-lbl">Projects logged</span>
+        </div>
+        <div class="stat-cell">
+          <span class="stat-val">3</span>
+          <span class="stat-lbl">Disciplines</span>
+        </div>
+        <div class="stat-cell">
+          <span class="stat-val cu">v.01</span>
+          <span class="stat-lbl">Portfolio rev</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- ══ Projects ══════════════════════════════════ -->
+  <section class="projects" id="projects">
+    <div class="container">
+
+      <div class="sec-hd">
+        <span class="sec-lbl">Sec. 01 — Projects</span>
+        <div class="sec-rule"></div>
+      </div>
+
+      <!-- ── No. 014 ── -->
+      <article class="project-entry">
+        <div class="proj-ref-row">
+          <span class="proj-ref">No. 014 — 2025 — Hardware + IoT — solo build</span>
+          <span class="proj-status-top">v.02 — calibration phase</span>
+        </div>
+        <h2 class="proj-title">Durian Greenhouse Automation</h2>
+        <p class="proj-desc">
+          Monitors temperature and humidity inside a durian grow house and triggers ventilation fans via relay when thresholds are exceeded. The first DHT22 probe corroded out at week one — replaced with a waterproof DS18B20 and added a secondary unit for redundancy. Firebase Realtime Database feeds a simple dashboard. Currently tuning relay debounce logic to stop fan chatter at threshold boundaries.
+        </p>
+        <div class="proj-meta">
+          <div class="meta-col">
+            <span class="m-lbl">Stack</span>
+            <span class="m-val">ESP8266 / Firebase / DHT22</span>
+          </div>
+          <div class="meta-col">
+            <span class="m-lbl">Duration</span>
+            <span class="m-val">3 weeks (ongoing)</span>
+          </div>
+          <div class="meta-col">
+            <span class="m-lbl">Role</span>
+            <span class="m-val">Firmware + cloud + sensors</span>
+          </div>
+          <div class="meta-col">
+            <span class="m-lbl">Status</span>
+            <span class="m-badge">v.02 — calibration phase</span>
+          </div>
+        </div>
+      </article>
+
+      <!-- ── No. 011 ── -->
+      <article class="project-entry">
+        <div class="proj-ref-row">
+          <span class="proj-ref">No. 011 — 2026 — Web — solo build</span>
+          <span class="proj-status-top">v.01 — shipped</span>
+        </div>
+        <h2 class="proj-title">J.Link Web Platform</h2>
+        <p class="proj-desc">
+          The portfolio and build log you're reading now. Designed from a custom brand system (Workshop direction), built as a single-file HTML first then migrated to a static site. Took longer than expected — kept rewriting the type scale. The constraint was zero frameworks; every interaction is vanilla JS. Shipped on Cloudflare Pages.
+        </p>
+        <div class="proj-meta">
+          <div class="meta-col">
+            <span class="m-lbl">Stack</span>
+            <span class="m-val">HTML / CSS / JS / Cloudflare</span>
+          </div>
+          <div class="meta-col">
+            <span class="m-lbl">Duration</span>
+            <span class="m-val">2 weeks</span>
+          </div>
+          <div class="meta-col">
+            <span class="m-lbl">Role</span>
+            <span class="m-val">Design + frontend + deployment</span>
+          </div>
+          <div class="meta-col">
+            <span class="m-lbl">Status</span>
+            <span class="m-badge">v.01 — shipped</span>
+          </div>
+        </div>
+      </article>
+
+      <!-- ── No. 007 ── -->
+      <article class="project-entry">
+        <div class="proj-ref-row">
+          <span class="proj-ref">No. 007 — 2024 — Embedded — solo build</span>
+          <span class="proj-status-top">v.03 — stable</span>
+        </div>
+        <h2 class="proj-title">USB Power Meter Firmware</h2>
+        <p class="proj-desc">
+          A USB-C inline power meter that reads voltage, current, and wattage at up to 1 kHz and displays a rolling waveform on a 0.96″ OLED. The INA226 shunt resistor caused a ground offset bug that took two PCB spins to fix — a 0.01 Ω tolerance issue. v.03 added peak-hold and a USB-PD negotiation sniffer mode. Board is 40×18 mm, fits in a standard USB-A enclosure.
+        </p>
+        <div class="proj-meta">
+          <div class="meta-col">
+            <span class="m-lbl">Stack</span>
+            <span class="m-val">STM32G0 / INA226 / SSD1306</span>
+          </div>
+          <div class="meta-col">
+            <span class="m-lbl">Duration</span>
+            <span class="m-val">6 weeks</span>
+          </div>
+          <div class="meta-col">
+            <span class="m-lbl">Role</span>
+            <span class="m-val">Firmware + PCB layout</span>
+          </div>
+          <div class="meta-col">
+            <span class="m-lbl">Status</span>
+            <span class="m-badge">v.03 — stable</span>
+          </div>
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+
+  <!-- ══ About ══════════════════════════════════════ -->
+  <section class="about" id="about">
+    <div class="container">
+
+      <div class="sec-hd">
+        <span class="sec-lbl">Sec. 02 — About</span>
+        <div class="sec-rule"></div>
+      </div>
+
+      <div class="about-grid">
+        <div class="about-prose">
+          <p>
+            I build across three disciplines — <strong>web, embedded, and hardware</strong> — and I number everything. The count is at 014. Each project gets a spec sheet, a stack list, a status, and an honest account of what broke.
+          </p>
+          <p>
+            The workshop direction came from the way I actually work: typed notes in a notebook, sketches on graph paper, components on a breadboard before they go on a PCB. The site is meant to reflect that — not a polished marketing surface, but a living build log.
+          </p>
+          <p>
+            Currently: calibrating a durian greenhouse sensor array (No. 014) and drafting a Rust-based CLI tool that parses KiCad netlists (No. 015, draft). Based in the Philippines.
+          </p>
+          <p class="about-sig">— Built well, documented better.</p>
+        </div>
+
+        <div class="about-side">
+          <div class="sb-blk">
+            <div class="sb-lbl">Web stack</div>
+            <div class="tags">
+              <span class="tag">HTML / CSS</span>
+              <span class="tag">JavaScript</span>
+              <span class="tag">Cloudflare</span>
+              <span class="tag">Rust (learning)</span>
+            </div>
+          </div>
+          <div class="sb-blk">
+            <div class="sb-lbl">Embedded</div>
+            <div class="tags">
+              <span class="tag">ESP8266 / ESP32</span>
+              <span class="tag">STM32</span>
+              <span class="tag">C / C++</span>
+              <span class="tag">Arduino</span>
+            </div>
+          </div>
+          <div class="sb-blk">
+            <div class="sb-lbl">Hardware</div>
+            <div class="tags">
+              <span class="tag">KiCad</span>
+              <span class="tag">PCB layout</span>
+              <span class="tag">3D print</span>
+              <span class="tag">Firebase</span>
+            </div>
+          </div>
+          <div class="sb-blk">
+            <div class="sb-lbl">Tools</div>
+            <div class="tags">
+              <span class="tag">git</span>
+              <span class="tag">PlatformIO</span>
+              <span class="tag">Figma</span>
+              <span class="tag">VS Code</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- ══ Contact ════════════════════════════════════ -->
+  <section class="contact" id="contact">
+    <div class="container">
+
+      <div class="sec-hd">
+        <span class="sec-lbl">Sec. 03 — Contact</span>
+        <div class="sec-rule"></div>
+      </div>
+
+      <div class="contact-list">
+        <a class="contact-row" href="mailto:hello@j.link">
+          <div class="cr-left">
+            <span class="cr-platform">Email</span>
+            <span class="cr-name">hello@j.link</span>
+          </div>
+          <span class="cr-arrow">→</span>
+        </a>
+        <a class="contact-row" href="https://github.com" target="_blank" rel="noopener noreferrer">
+          <div class="cr-left">
+            <span class="cr-platform">GitHub</span>
+            <span class="cr-name">github.com/jlink</span>
+          </div>
+          <span class="cr-arrow">→</span>
+        </a>
+        <a class="contact-row" href="https://linkedin.com" target="_blank" rel="noopener noreferrer">
+          <div class="cr-left">
+            <span class="cr-platform">LinkedIn</span>
+            <span class="cr-name">linkedin.com/in/jlink</span>
+          </div>
+          <span class="cr-arrow">→</span>
+        </a>
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- ══ Footer ════════════════════════════════════ -->
+  <footer>
+    <div class="footer-strip">
+      <div class="fs-cell">
+        <a href="#" class="logo" style="font-size:13px;" aria-label="J.Link — back to top">
+          J<span class="logo-dot" style="width:6px;height:6px;"></span>Link
+        </a>
+      </div>
+      <div class="fs-cell">
+        <span class="fs-lbl">Rev</span>
+        <span class="fs-val cu">v.01</span>
+      </div>
+      <div class="fs-cell">
+        <span class="fs-val">Built well, documented better.</span>
+      </div>
+      <div class="fs-cell">
+        <span class="fs-lbl">© 2026 J.Link</span>
+      </div>
+    </div>
+  </footer>
+
+
+  <script>
+    function toggleTheme() {
+      const html = document.documentElement;
+      const btn  = document.getElementById('themeBtn');
+      const isDark = html.getAttribute('data-theme') === 'dark';
+      html.setAttribute('data-theme', isDark ? 'light' : 'dark');
+      btn.textContent = isDark ? '◐ Dark' : '◐ Light';
+    }
+  </script>
+
+</body>
+</html>
