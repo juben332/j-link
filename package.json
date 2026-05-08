@@ -1,0 +1,11 @@
+{
+  "name": "j-link",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "sync-projects": "node scripts/sync-projects.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

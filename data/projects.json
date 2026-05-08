@@ -1,0 +1,28 @@
+[
+  {
+    "id": "prj_AE0dGr4mZGIut7ZzbjFqtn6qtN31",
+    "name": "j-link",
+    "slug": "j-link-web-platform",
+    "description": "Personal portfolio and digital workshop — built from scratch with plain HTML, CSS, and vanilla JS. Engineering-draftsman aesthetic, dark/light theme, zero framework.",
+    "url": "https://j-link.vercel.app",
+    "repo": "https://github.com/juben332/j-link",
+    "framework": "HTML/CSS/JS",
+    "stack": ["HTML5", "CSS Custom Properties", "Vanilla JS", "Vercel"],
+    "featured": true,
+    "hidden": false,
+    "updatedAt": "2026-05-08T00:00:00.000Z"
+  },
+  {
+    "id": "coffee-claude",
+    "name": "coffee-claude",
+    "slug": "coffee-claude",
+    "description": "Single-page coffee shop landing page. Same engineering-draftsman design language applied to a specialty café brand — menu, gallery, visit info, and contact section.",
+    "url": "https://coffee-claude.vercel.app",
+    "repo": "https://github.com/juben332/coffee-claude",
+    "framework": "HTML/CSS/JS",
+    "stack": ["HTML5", "CSS Custom Properties", "Vanilla JS", "Vercel"],
+    "featured": false,
+    "hidden": false,
+    "updatedAt": "2026-05-08T00:00:00.000Z"
+  }
+]
